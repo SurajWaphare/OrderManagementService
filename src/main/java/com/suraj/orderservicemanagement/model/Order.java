@@ -2,6 +2,7 @@ package com.suraj.orderservicemanagement.model;
 
 import jakarta.persistence.*;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.NonNull;
 import lombok.Setter;
 import org.antlr.v4.runtime.misc.NotNull;
@@ -10,6 +11,7 @@ import jakarta.validation.constraints.Positive;
 @Entity
 @Getter
 @Setter
+@NoArgsConstructor
 @Table(name = "orders")
 public class Order {
 

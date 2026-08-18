@@ -1,5 +1,6 @@
 package com.suraj.orderservicemanagement.service;
 
+import com.suraj.orderservicemanagement.kafka.OrderkafkaProducer;
 import com.suraj.orderservicemanagement.repository.OrderRepository;
 import com.suraj.orderservicemanagement.model.Order;
 import com.suraj.orderservicemanagement.model.Order;
@@ -20,14 +21,17 @@ public class OrderServiceImplTest {
     @Mock//creates Fake object
     private OrderRepository orderRepository;
 
+    @Mock
+    private OrderkafkaProducer orderkafkaProducer;
+
     @InjectMocks//in which class it will create fake object or above class
     private OrderServiceImpl orderService;
 
     @Test
-    void createOrder(){
+    void createOrder_Happy(){
         Order order = new Order();
-        order.setId(2);
-        order.setCustomerName("SURAJ");
+        order.setId(2L);
+        order.setCustomerName("Suraj");
         order.setPrice(15000);
         order.setQuantity(1);
         order.setProduct("Mobile Phone");
@@ -38,7 +42,31 @@ public class OrderServiceImplTest {
         Order result = orderService.createOrder(order);
         assertNotNull(result);
 
+        assertEquals("Suraj",result.getCustomerName());
+        assertEquals(15000,result.getPrice());
+        assertEquals(1,result.getQuantity());
         assertEquals("Mobile Phone",result.getProduct());
+        assertEquals(2L,result.getId());
 
+        verify(orderRepository,times(1)).save(order);
+    }
+
+    @Test
+    void createOrder_Failure_ThrowException(){
+        Order order = new Order();
+        order.setCustomerName("Suraj");
+        order.setPrice(5000);
+        order.setProduct("Laptop");
+        order.setQuantity(1);
+        order.setId(2L);
+
+        when(orderRepository.save(order)).thenThrow(new RuntimeException("Database Error"));
+
+        //RuntimeException exception = assertThrows(RuntimeException.class,()-> orderService.createOrder(order));
+
+        //assertEquals("Database error",exception.getMessage());
+        assertThrows(RuntimeException.class,()->orderService.createOrder(order));
+
+        //verify(orderRepository,times(1)).save(order);
     }
 }
